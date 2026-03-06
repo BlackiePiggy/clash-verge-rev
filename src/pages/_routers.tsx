@@ -26,6 +26,7 @@ import ProxiesPage from "./proxies";
 import RulesPage from "./rules";
 import SettingsPage from "./settings";
 import UnlockPage from "./unlock";
+import WidgetPage from "./widget";
 
 export const navItems = [
   {
@@ -89,5 +90,9 @@ export const router = createBrowserRouter([
           Component: item.Component,
         }) as RouteObject,
     ),
+  },
+  {
+    path: "/widget",
+    Component: WidgetPage,
   },
 ]);

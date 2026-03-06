@@ -117,6 +117,30 @@ mod app_init {
         Ok(())
     }
 
+    #[cfg(target_os = "macos")]
+    pub fn setup_widget_window(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+        if app.get_webview_window("widget").is_some() {
+            return Ok(());
+        }
+
+        tauri::WebviewWindowBuilder::new(
+            app,
+            "widget",
+            tauri::WebviewUrl::App("/widget".into()),
+        )
+        .title("Clash Verge Widget")
+        .decorations(false)
+        .resizable(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .inner_size(360.0, 420.0)
+        .min_inner_size(360.0, 420.0)
+        .max_inner_size(360.0, 420.0)
+        .build()?;
+
+        Ok(())
+    }
+
     pub fn generate_handlers() -> impl Fn(tauri::ipc::Invoke<tauri::Wry>) -> bool + Send + Sync + 'static {
         tauri::generate_handler![
             tauri_plugin_clash_verge_sysinfo::commands::get_system_info,
@@ -238,6 +262,11 @@ pub fn run() {
 
             if let Err(e) = app_init::setup_window_state(app) {
                 logging!(error, Type::Setup, "Failed to setup window state: {}", e);
+            }
+
+            #[cfg(target_os = "macos")]
+            if let Err(e) = app_init::setup_widget_window(app) {
+                logging!(error, Type::Setup, "Failed to setup widget window: {}", e);
             }
 
             resolve::resolve_setup_async();
